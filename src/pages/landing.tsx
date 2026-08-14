@@ -236,7 +236,7 @@ export function LandingPage() {
               )}
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://github.com/FajriGoBimbel/shadcn-theme-generator" target="_blank" rel="noopener noreferrer">
                 <Github className="h-4 w-4" />
               </a>
             </Button>
