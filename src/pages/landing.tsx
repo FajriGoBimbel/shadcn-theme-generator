@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Palette,
   Eye,
@@ -32,26 +32,89 @@ import { cn } from "@/lib/utils";
 function HeroGradient() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute -top-[40%] left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
-      <div className="absolute -bottom-[20%] -right-[10%] h-[400px] w-[400px] rounded-full bg-primary/3 blur-3xl" />
-      <div className="absolute -bottom-[20%] -left-[10%] h-[300px] w-[300px] rounded-full bg-accent/5 blur-3xl" />
+      <div className="absolute -top-[40%] left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl animate-float-slow" />
+      <div className="absolute -bottom-[20%] -right-[10%] h-[400px] w-[400px] rounded-full bg-primary/3 blur-3xl animate-float-delayed" />
+      <div className="absolute -bottom-[20%] -left-[10%] h-[300px] w-[300px] rounded-full bg-accent/5 blur-3xl animate-float" />
     </div>
   );
 }
 
-function DashboardPreview() {
+/** Animated counter that loops between values */
+function AnimatedNumber({ values, prefix = "", suffix = "" }: { values: string[]; prefix?: string; suffix?: string }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % values.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [values.length]);
+
   return (
-    <div className="rounded-xl border bg-card shadow-lg overflow-hidden">
+    <span className="inline-block transition-all duration-500">
+      {prefix}
+      <span key={index} className="inline-block animate-fade-in-up">
+        {values[index]}
+      </span>
+      {suffix}
+    </span>
+  );
+}
+
+/** Animated typing text that loops */
+function TypingText({ texts }: { texts: string[] }) {
+  const [index, setIndex] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = texts[index]!;
+    let timeout: ReturnType<typeof setTimeout>;
+
+    if (!isDeleting && displayed.length < current.length) {
+      timeout = setTimeout(() => setDisplayed(current.slice(0, displayed.length + 1)), 80);
+    } else if (!isDeleting && displayed.length === current.length) {
+      timeout = setTimeout(() => setIsDeleting(true), 2000);
+    } else if (isDeleting && displayed.length > 0) {
+      timeout = setTimeout(() => setDisplayed(current.slice(0, displayed.length - 1)), 40);
+    } else {
+      setIsDeleting(false);
+      setIndex((prev) => (prev + 1) % texts.length);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayed, isDeleting, index, texts]);
+
+  return (
+    <span className="font-mono text-xs text-primary">
+      {displayed}
+      <span className="animate-blink">|</span>
+    </span>
+  );
+}
+
+function DashboardPreview() {
+  const [activeRow, setActiveRow] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveRow((prev) => (prev + 1) % 3);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="rounded-xl border bg-card shadow-lg overflow-hidden animate-border-glow">
       {/* Mock window bar */}
       <div className="flex items-center gap-2 border-b bg-muted/40 px-4 py-2.5">
         <div className="flex gap-1.5">
-          <div className="h-3 w-3 rounded-full bg-red-400" />
-          <div className="h-3 w-3 rounded-full bg-yellow-400" />
-          <div className="h-3 w-3 rounded-full bg-green-400" />
+          <div className="h-3 w-3 rounded-full bg-red-400 animate-pulse-dot" />
+          <div className="h-3 w-3 rounded-full bg-yellow-400 animate-pulse-dot" style={{ animationDelay: "0.3s" }} />
+          <div className="h-3 w-3 rounded-full bg-green-400 animate-pulse-dot" style={{ animationDelay: "0.6s" }} />
         </div>
         <div className="flex-1 text-center">
-          <div className="mx-auto w-48 rounded-md bg-background/80 px-3 py-1 text-xs text-muted-foreground">
-            localhost:5173
+          <div className="mx-auto w-48 rounded-md bg-background/80 px-3 py-1 text-xs text-muted-foreground overflow-hidden">
+            <TypingText texts={["localhost:5173", "my-app.vercel.app", "dashboard.dev"]} />
           </div>
         </div>
       </div>
@@ -63,25 +126,44 @@ function DashboardPreview() {
             <h3 className="font-semibold text-card-foreground">Dashboard</h3>
             <p className="text-xs text-muted-foreground">Welcome back, Developer</p>
           </div>
-          <Button size="sm">New Project</Button>
+          <Button size="sm" className="animate-float-slow">New Project</Button>
         </div>
 
-        {/* Stats */}
+        {/* Stats with animated numbers */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-lg border bg-background p-3 space-y-1">
+          <div className="rounded-lg border bg-background p-3 space-y-1 animate-float" style={{ animationDelay: "0s" }}>
             <p className="text-xs text-muted-foreground">Revenue</p>
-            <p className="text-lg font-bold text-card-foreground">$45,231</p>
-            <p className="text-xs text-green-600">+20.1%</p>
+            <p className="text-lg font-bold text-card-foreground">
+              <AnimatedNumber values={["$45,231", "$48,102", "$51,890", "$47,654"]} />
+            </p>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-green-600">+20.1%</span>
+              <div className="h-1 flex-1 rounded-full bg-muted overflow-hidden">
+                <div className="h-full rounded-full bg-green-500 animate-progress" />
+              </div>
+            </div>
           </div>
-          <div className="rounded-lg border bg-background p-3 space-y-1">
+          <div className="rounded-lg border bg-background p-3 space-y-1 animate-float" style={{ animationDelay: "0.5s" }}>
             <p className="text-xs text-muted-foreground">Users</p>
-            <p className="text-lg font-bold text-card-foreground">2,350</p>
-            <p className="text-xs text-green-600">+15.3%</p>
+            <p className="text-lg font-bold text-card-foreground">
+              <AnimatedNumber values={["2,350", "2,412", "2,389", "2,501"]} />
+            </p>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-green-600">+15.3%</span>
+              <div className="h-1 flex-1 rounded-full bg-muted overflow-hidden">
+                <div className="h-full rounded-full bg-green-500 animate-progress" style={{ animationDelay: "0.5s" }} />
+              </div>
+            </div>
           </div>
-          <div className="rounded-lg border bg-background p-3 space-y-1">
+          <div className="rounded-lg border bg-background p-3 space-y-1 animate-float" style={{ animationDelay: "1s" }}>
             <p className="text-xs text-muted-foreground">Active</p>
-            <p className="text-lg font-bold text-card-foreground">573</p>
-            <p className="text-xs text-muted-foreground">online now</p>
+            <p className="text-lg font-bold text-card-foreground">
+              <AnimatedNumber values={["573", "612", "589", "634"]} />
+            </p>
+            <div className="flex items-center gap-1">
+              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse-dot" />
+              <span className="text-xs text-muted-foreground">online now</span>
+            </div>
           </div>
         </div>
 
@@ -94,7 +176,7 @@ function DashboardPreview() {
           <Button size="sm" variant="ghost">Ghost</Button>
         </div>
 
-        {/* Form preview */}
+        {/* Form preview with shimmer focus effect */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label className="text-xs">Email</Label>
@@ -106,15 +188,15 @@ function DashboardPreview() {
           </div>
         </div>
 
-        {/* Badges */}
+        {/* Badges with subtle pulse */}
         <div className="flex flex-wrap gap-2">
-          <Badge>Active</Badge>
-          <Badge variant="secondary">Pending</Badge>
-          <Badge variant="destructive">Error</Badge>
-          <Badge variant="outline">Draft</Badge>
+          <Badge className="animate-float-slow">Active</Badge>
+          <Badge variant="secondary" className="animate-float-slow" style={{ animationDelay: "0.3s" }}>Pending</Badge>
+          <Badge variant="destructive" className="animate-float-slow" style={{ animationDelay: "0.6s" }}>Error</Badge>
+          <Badge variant="outline" className="animate-float-slow" style={{ animationDelay: "0.9s" }}>Draft</Badge>
         </div>
 
-        {/* Mini table */}
+        {/* Mini table with animated row highlight */}
         <div className="rounded-lg border overflow-hidden">
           <table className="w-full text-xs">
             <thead>
@@ -125,21 +207,32 @@ function DashboardPreview() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b">
-                <td className="px-3 py-2 font-medium">Project Alpha</td>
-                <td className="px-3 py-2"><Badge variant="default" className="text-[10px] px-1.5 py-0">Active</Badge></td>
-                <td className="px-3 py-2 text-right">$2,500</td>
-              </tr>
-              <tr className="border-b">
-                <td className="px-3 py-2 font-medium">Project Beta</td>
-                <td className="px-3 py-2"><Badge variant="secondary" className="text-[10px] px-1.5 py-0">Pending</Badge></td>
-                <td className="px-3 py-2 text-right">$1,200</td>
-              </tr>
-              <tr>
-                <td className="px-3 py-2 font-medium">Project Gamma</td>
-                <td className="px-3 py-2"><Badge variant="outline" className="text-[10px] px-1.5 py-0">Draft</Badge></td>
-                <td className="px-3 py-2 text-right">$800</td>
-              </tr>
+              {[
+                { name: "Project Alpha", badge: "default" as const, badgeText: "Active", amount: "$2,500" },
+                { name: "Project Beta", badge: "secondary" as const, badgeText: "Pending", amount: "$1,200" },
+                { name: "Project Gamma", badge: "outline" as const, badgeText: "Draft", amount: "$800" },
+              ].map((row, i) => (
+                <tr
+                  key={row.name}
+                  className={cn(
+                    "border-b last:border-0 transition-colors duration-500",
+                    activeRow === i && "bg-primary/5"
+                  )}
+                >
+                  <td className="px-3 py-2 font-medium">
+                    {row.name}
+                    {activeRow === i && (
+                      <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-primary animate-pulse-dot" />
+                    )}
+                  </td>
+                  <td className="px-3 py-2">
+                    <Badge variant={row.badge} className="text-[10px] px-1.5 py-0">
+                      {row.badgeText}
+                    </Badge>
+                  </td>
+                  <td className="px-3 py-2 text-right">{row.amount}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -149,8 +242,28 @@ function DashboardPreview() {
 }
 
 function CodePreview() {
+  const [line, setLine] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLine((prev) => (prev + 1) % 8);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const lines = [
+    { prefix: "@import", content: ' "tailwindcss";' },
+    { prefix: "@custom-variant", content: " dark (&:is(.dark *));" },
+    { prefix: ":root", content: " {" },
+    { prefix: "  --primary:", content: " oklch(0.488 0.243 264);" },
+    { prefix: "  --background:", content: " oklch(1 0 0);" },
+    { prefix: "}", content: "" },
+    { prefix: "@theme inline", content: " {" },
+    { prefix: "  --color-primary:", content: " var(--primary);" },
+  ];
+
   return (
-    <div className="rounded-xl border bg-card overflow-hidden shadow-lg">
+    <div className="rounded-xl border bg-card overflow-hidden shadow-lg animate-float-slow" style={{ animationDelay: "0.5s" }}>
       <div className="flex items-center justify-between border-b bg-muted/40 px-4 py-2.5">
         <span className="text-xs font-medium text-muted-foreground">global.css</span>
         <Button variant="ghost" size="sm" className="h-6 px-2 text-xs gap-1">
@@ -159,19 +272,19 @@ function CodePreview() {
         </Button>
       </div>
       <div className="p-4 font-mono text-xs leading-relaxed text-muted-foreground overflow-hidden max-h-[280px]">
-        <div><span className="text-primary">@import</span> "tailwindcss";</div>
-        <div className="mt-2"><span className="text-primary">@custom-variant</span> dark (&:is(.dark *));</div>
-        <div className="mt-3"><span className="text-muted-foreground/60">:root</span> {"{"}</div>
-        <div className="pl-4">--background: <span className="text-primary">oklch(1 0 0)</span>;</div>
-        <div className="pl-4">--foreground: <span className="text-primary">oklch(0.145 0 0)</span>;</div>
-        <div className="pl-4">--primary: <span className="text-primary">oklch(0.205 0 0)</span>;</div>
-        <div className="pl-4">--primary-foreground: <span className="text-primary">oklch(0.985 0 0)</span>;</div>
-        <div className="pl-4 text-muted-foreground/40">...</div>
-        <div>{"}"}</div>
-        <div className="mt-3"><span className="text-muted-foreground/60">@theme inline</span> {"{"}</div>
-        <div className="pl-4">--color-primary: <span className="text-primary">var(--primary)</span>;</div>
-        <div className="pl-4 text-muted-foreground/40">...</div>
-        <div>{"}"}</div>
+        {lines.map((l, i) => (
+          <div
+            key={i}
+            className={cn(
+              "transition-all duration-300 rounded px-1 -mx-1",
+              line === i && "bg-primary/10"
+            )}
+          >
+            <span className="text-primary">{l.prefix}</span>
+            {l.content}
+            {line === i && <span className="animate-blink text-primary">|</span>}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -236,7 +349,7 @@ export function LandingPage() {
               )}
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-              <a href="https://github.com/FajriGoBimbel/shadcn-theme-generator" target="_blank" rel="noopener noreferrer">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer">
                 <Github className="h-4 w-4" />
               </a>
             </Button>
@@ -253,7 +366,7 @@ export function LandingPage() {
         <HeroGradient />
         <div className="relative">
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-4 py-1.5 text-sm text-muted-foreground mb-8">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <Sparkles className="h-3.5 w-3.5 text-primary animate-pulse-dot" />
             Visual Theme Builder for shadcn/ui
           </div>
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl mb-6 leading-[1.1]">
@@ -262,7 +375,7 @@ export function LandingPage() {
             theme{" "}
             <span className="relative">
               <span className="text-primary">visually</span>
-              <span className="absolute -bottom-1 left-0 right-0 h-1 rounded-full bg-primary/20" />
+              <span className="absolute -bottom-1 left-0 right-0 h-1 rounded-full bg-primary/20 animate-shimmer" />
             </span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground mb-10 leading-relaxed">
@@ -295,10 +408,11 @@ export function LandingPage() {
       <section className="container mx-auto px-6 pb-16">
         <div className="flex flex-wrap items-center justify-center gap-3">
           {["Vite", "React", "TypeScript", "Tailwind CSS v4", "shadcn/ui", "OKLCH"].map(
-            (tech) => (
+            (tech, i) => (
               <div
                 key={tech}
-                className="rounded-full border bg-card px-4 py-1.5 text-sm font-medium text-card-foreground shadow-sm"
+                className="rounded-full border bg-card px-4 py-1.5 text-sm font-medium text-card-foreground shadow-sm animate-float-slow"
+                style={{ animationDelay: `${i * 0.2}s` }}
               >
                 {tech}
               </div>
@@ -328,7 +442,7 @@ export function LandingPage() {
           </div>
           <div className="lg:col-span-2 space-y-6">
             <CodePreview />
-            <Card>
+            <Card className="animate-float" style={{ animationDelay: "1s" }}>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm">Tabs Component</CardTitle>
               </CardHeader>
@@ -375,72 +489,28 @@ export function LandingPage() {
           </p>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Card className="group hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                <Palette className="h-5 w-5" />
-              </div>
-              <CardTitle className="text-base">Color System</CardTitle>
-              <CardDescription>
-                Full OKLCH color configuration for 30+ variables. Light and dark modes independently.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="group hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                <Eye className="h-5 w-5" />
-              </div>
-              <CardTitle className="text-base">Live Preview</CardTitle>
-              <CardDescription>
-                Real-time preview on actual shadcn/ui components. No refresh needed.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="group hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                <Layers className="h-5 w-5" />
-              </div>
-              <CardTitle className="text-base">Theme Presets</CardTitle>
-              <CardDescription>
-                7 built-in presets to jumpstart your theme. Customize further from any preset.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="group hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                <Dices className="h-5 w-5" />
-              </div>
-              <CardTitle className="text-base">Random Generate</CardTitle>
-              <CardDescription>
-                Generate harmonious random themes with one click. Explore unexpected color combinations.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="group hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                <Code2 className="h-5 w-5" />
-              </div>
-              <CardTitle className="text-base">Generate CSS</CardTitle>
-              <CardDescription>
-                Production-ready global.css compatible with Tailwind CSS v4 and shadcn/ui.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="group hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                <Zap className="h-5 w-5" />
-              </div>
-              <CardTitle className="text-base">Instant Output</CardTitle>
-              <CardDescription>
-                One-click copy or download. Drop into any Vite + Tailwind + shadcn/ui project.
-              </CardDescription>
-            </CardHeader>
-          </Card>
+          {[
+            { icon: Palette, title: "Color System", desc: "Full OKLCH color configuration for 30+ variables. Light and dark modes independently." },
+            { icon: Eye, title: "Live Preview", desc: "Real-time preview on actual shadcn/ui components. No refresh needed." },
+            { icon: Layers, title: "Theme Presets", desc: "7 built-in presets to jumpstart your theme. Customize further from any preset." },
+            { icon: Dices, title: "Random Generate", desc: "Generate harmonious random themes with one click. Explore unexpected color combinations." },
+            { icon: Code2, title: "Generate CSS", desc: "Production-ready global.css compatible with Tailwind CSS v4 and shadcn/ui." },
+            { icon: Zap, title: "Instant Output", desc: "One-click copy or download. Drop into any Vite + Tailwind + shadcn/ui project." },
+          ].map((feature, i) => (
+            <Card
+              key={feature.title}
+              className="group hover:shadow-md transition-all duration-300 hover:-translate-y-1 animate-float-slow"
+              style={{ animationDelay: `${i * 0.4}s` }}
+            >
+              <CardHeader>
+                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 group-hover:scale-110">
+                  <feature.icon className="h-5 w-5" />
+                </div>
+                <CardTitle className="text-base">{feature.title}</CardTitle>
+                <CardDescription>{feature.desc}</CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
         </div>
       </section>
 
@@ -459,8 +529,10 @@ export function LandingPage() {
         </div>
         <div className="mx-auto max-w-2xl">
           <div className="relative">
-            {/* Connecting line */}
-            <div className="absolute left-6 top-10 bottom-10 w-px bg-border" />
+            {/* Connecting line with shimmer */}
+            <div className="absolute left-6 top-10 bottom-10 w-px bg-border overflow-hidden">
+              <div className="absolute inset-0 w-full animate-shimmer opacity-50" />
+            </div>
 
             <div className="space-y-8">
               {[
@@ -485,9 +557,15 @@ export function LandingPage() {
                   desc: "Copy or download, paste into your project, done.",
                 },
               ].map((step, i) => (
-                <div key={step.title} className="relative flex items-start gap-5">
-                  <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-background text-primary shadow-sm">
+                <div
+                  key={step.title}
+                  className="relative flex items-start gap-5 animate-float-slow"
+                  style={{ animationDelay: `${i * 0.6}s` }}
+                >
+                  <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-background text-primary shadow-sm group">
                     <step.icon className="h-5 w-5" />
+                    {/* Ping effect */}
+                    <span className="absolute inset-0 rounded-full border-2 border-primary animate-ping opacity-20" style={{ animationDuration: "3s", animationDelay: `${i * 0.8}s` }} />
                   </div>
                   <div className="pt-1.5">
                     <div className="flex items-center gap-2 mb-1">
@@ -507,10 +585,10 @@ export function LandingPage() {
 
       {/* CTA */}
       <section className="container mx-auto px-6 py-20">
-        <Card className="relative overflow-hidden">
+        <Card className="relative overflow-hidden animate-border-glow">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
           <CardContent className="relative flex flex-col items-center text-center py-16 px-8">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary mb-6">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary mb-6 animate-float">
               <Palette className="h-6 w-6 text-primary-foreground" />
             </div>
             <h2 className="text-2xl font-bold sm:text-3xl mb-3">

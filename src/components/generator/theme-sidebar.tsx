@@ -3,6 +3,7 @@ import { useTheme } from "@/lib/theme-context";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ThemeGallery } from "./theme-gallery";
 import { ThemePresetsSelector } from "./theme-presets-selector";
 import { ThemeColors } from "./theme-colors";
 import { ThemeRadius } from "./theme-radius";
@@ -70,6 +71,8 @@ export function ThemeSidebar({ onClose }: ThemeSidebarProps) {
       {/* Scrollable content */}
       <ScrollArea className="flex-1">
         <div className="space-y-6 p-4">
+          <ThemeGallery />
+          <Separator />
           <ThemePresetsSelector />
           <Separator />
           <ThemeRadius />

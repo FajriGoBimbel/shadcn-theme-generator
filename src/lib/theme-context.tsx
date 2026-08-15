@@ -28,6 +28,7 @@ interface ThemeContextValue {
   updateFontMono: (font: string) => void;
   updateShadowPreset: (preset: string) => void;
   applyPreset: (preset: PresetName) => void;
+  applyFullTheme: (theme: ThemeConfig) => void;
   resetTheme: () => void;
   randomizeTheme: () => void;
 }
@@ -173,6 +174,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const applyFullTheme = useCallback((theme: ThemeConfig) => {
+    setConfig(theme);
+  }, []);
+
   const resetTheme = useCallback(() => {
     setConfig(defaultThemeConfig);
     setPreviewMode("light");
@@ -288,6 +293,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         updateFontMono,
         updateShadowPreset,
         applyPreset,
+        applyFullTheme,
         resetTheme,
         randomizeTheme,
       }}
