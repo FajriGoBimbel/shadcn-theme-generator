@@ -272,18 +272,36 @@ export const fontSansOptions = [
   { label: "Inter", value: '"Inter", ui-sans-serif, system-ui, sans-serif' },
   { label: "Geist", value: '"Geist", ui-sans-serif, system-ui, sans-serif' },
   { label: "Roboto", value: '"Roboto", ui-sans-serif, system-ui, sans-serif' },
+  { label: "Poppins", value: '"Poppins", ui-sans-serif, system-ui, sans-serif' },
+  { label: "DM Sans", value: '"DM Sans", ui-sans-serif, system-ui, sans-serif' },
+  { label: "Plus Jakarta Sans", value: '"Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif' },
+  { label: "Nunito", value: '"Nunito", ui-sans-serif, system-ui, sans-serif' },
+  { label: "Outfit", value: '"Outfit", ui-sans-serif, system-ui, sans-serif' },
+  { label: "Manrope", value: '"Manrope", ui-sans-serif, system-ui, sans-serif' },
+  { label: "Space Grotesk", value: '"Space Grotesk", ui-sans-serif, system-ui, sans-serif' },
+  { label: "Sora", value: '"Sora", ui-sans-serif, system-ui, sans-serif' },
 ];
 
 export const fontSerifOptions = [
   { label: "System", value: '"ui-serif", Georgia, serif' },
   { label: "Georgia", value: '"Georgia", ui-serif, serif' },
   { label: "Geist", value: '"Geist", ui-serif, Georgia, serif' },
+  { label: "Playfair Display", value: '"Playfair Display", ui-serif, Georgia, serif' },
+  { label: "Lora", value: '"Lora", ui-serif, Georgia, serif' },
+  { label: "Merriweather", value: '"Merriweather", ui-serif, Georgia, serif' },
+  { label: "DM Serif Display", value: '"DM Serif Display", ui-serif, Georgia, serif' },
+  { label: "Libre Baskerville", value: '"Libre Baskerville", ui-serif, Georgia, serif' },
 ];
 
 export const fontMonoOptions = [
   { label: "System", value: '"ui-monospace", monospace' },
   { label: "JetBrains Mono", value: '"JetBrains Mono", ui-monospace, monospace' },
   { label: "Geist Mono", value: '"Geist Mono", ui-monospace, monospace' },
+  { label: "Fira Code", value: '"Fira Code", ui-monospace, monospace' },
+  { label: "Source Code Pro", value: '"Source Code Pro", ui-monospace, monospace' },
+  { label: "IBM Plex Mono", value: '"IBM Plex Mono", ui-monospace, monospace' },
+  { label: "Space Mono", value: '"Space Mono", ui-monospace, monospace' },
+  { label: "Cascadia Code", value: '"Cascadia Code", ui-monospace, monospace' },
 ];
 
 export const shadowPresets: Record<string, ThemeShadows> = {

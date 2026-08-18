@@ -18,16 +18,17 @@ export function ThemeTypography() {
 
       <div className="space-y-2">
         <label className="text-xs text-muted-foreground">Font Sans</label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-1.5">
           {fontSansOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => updateFontSans(option.value)}
               className={cn(
-                "rounded-lg border px-3 py-2 text-xs transition-colors hover:bg-accent text-left",
+                "rounded-md border px-2 py-1.5 text-[11px] transition-colors hover:bg-accent text-left truncate",
                 config.fontSans === option.value &&
-                  "border-primary bg-primary/5 text-primary"
+                  "border-primary bg-primary/5 text-primary font-medium"
               )}
+              title={option.label}
             >
               {option.label}
             </button>
@@ -37,16 +38,17 @@ export function ThemeTypography() {
 
       <div className="space-y-2">
         <label className="text-xs text-muted-foreground">Font Serif</label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1.5">
           {fontSerifOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => updateFontSerif(option.value)}
               className={cn(
-                "rounded-lg border px-3 py-2 text-xs transition-colors hover:bg-accent text-left",
+                "rounded-md border px-2 py-1.5 text-[11px] transition-colors hover:bg-accent text-left truncate",
                 config.fontSerif === option.value &&
-                  "border-primary bg-primary/5 text-primary"
+                  "border-primary bg-primary/5 text-primary font-medium"
               )}
+              title={option.label}
             >
               {option.label}
             </button>
@@ -56,16 +58,17 @@ export function ThemeTypography() {
 
       <div className="space-y-2">
         <label className="text-xs text-muted-foreground">Font Mono</label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1.5">
           {fontMonoOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => updateFontMono(option.value)}
               className={cn(
-                "rounded-lg border px-3 py-2 text-xs transition-colors hover:bg-accent text-left",
+                "rounded-md border px-2 py-1.5 text-[11px] transition-colors hover:bg-accent text-left truncate",
                 config.fontMono === option.value &&
-                  "border-primary bg-primary/5 text-primary"
+                  "border-primary bg-primary/5 text-primary font-medium"
               )}
+              title={option.label}
             >
               {option.label}
             </button>
