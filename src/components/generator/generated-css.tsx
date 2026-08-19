@@ -5,10 +5,10 @@ import { generateCSS } from "@/lib/css-generator";
 import { Button } from "@/components/ui/button";
 
 export function GeneratedCSS() {
-  const { config } = useTheme();
+  const { config, colorFormat, tailwindVersion } = useTheme();
   const [copied, setCopied] = useState(false);
 
-  const css = generateCSS(config);
+  const css = generateCSS(config, colorFormat, tailwindVersion);
 
   const handleCopy = async () => {
     try {

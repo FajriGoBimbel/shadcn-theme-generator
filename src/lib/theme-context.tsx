@@ -6,7 +6,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import type { ThemeConfig, ThemeColors, ThemeMode, PresetName } from "@/types/theme";
+import type { ThemeConfig, ThemeColors, ThemeMode, PresetName, ColorFormat, TailwindVersion } from "@/types/theme";
 import { defaultThemeConfig, presets, shadowPresets } from "./theme-presets";
 
 const STORAGE_KEY = "shadcn-theme-generator";
@@ -14,12 +14,18 @@ const STORAGE_KEY = "shadcn-theme-generator";
 interface ThemeState {
   config: ThemeConfig;
   previewMode: ThemeMode;
+  colorFormat: ColorFormat;
+  tailwindVersion: TailwindVersion;
 }
 
 interface ThemeContextValue {
   config: ThemeConfig;
   previewMode: ThemeMode;
+  colorFormat: ColorFormat;
+  tailwindVersion: TailwindVersion;
   setPreviewMode: (mode: ThemeMode) => void;
+  setColorFormat: (format: ColorFormat) => void;
+  setTailwindVersion: (version: TailwindVersion) => void;
   updateLightColor: (key: keyof ThemeColors, value: string) => void;
   updateDarkColor: (key: keyof ThemeColors, value: string) => void;
   updateRadius: (radius: string) => void;
@@ -66,10 +72,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return saved?.previewMode ?? "light";
   });
 
+  const [colorFormat, setColorFormat] = useState<ColorFormat>(() => {
+    const saved = loadFromStorage();
+    return saved?.colorFormat ?? "oklch";
+  });
+
+  const [tailwindVersion, setTailwindVersion] = useState<TailwindVersion>(() => {
+    const saved = loadFromStorage();
+    return saved?.tailwindVersion ?? "v4";
+  });
+
   // Persist to localStorage
   useEffect(() => {
-    saveToStorage({ config, previewMode });
-  }, [config, previewMode]);
+    saveToStorage({ config, previewMode, colorFormat, tailwindVersion });
+  }, [config, previewMode, colorFormat, tailwindVersion]);
 
   // Inject CSS variables into :root so all pages reflect the theme
   useEffect(() => {
@@ -284,7 +300,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       value={{
         config,
         previewMode,
+        colorFormat,
+        tailwindVersion,
         setPreviewMode,
+        setColorFormat,
+        setTailwindVersion,
         updateLightColor,
         updateDarkColor,
         updateRadius,

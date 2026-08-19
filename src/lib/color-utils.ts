@@ -88,3 +88,94 @@ export function oklchToHex(oklch: string): string {
 
   return `#${toHex(r)}${toHex(g)}${toHex(bFinal)}`;
 }
+
+
+/**
+ * Convert an oklch string to HSL format: hsl(h, s%, l%)
+ */
+export function oklchToHsl(oklch: string): string {
+  const hex = oklchToHex(oklch);
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+
+  if (max === min) {
+    return `hsl(0 0% ${Math.round(l * 100)}%)`;
+  }
+
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+  let h = 0;
+  if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+  else if (max === g) h = ((b - r) / d + 2) / 6;
+  else h = ((r - g) / d + 4) / 6;
+
+  return `hsl(${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%)`;
+}
+
+/**
+ * Convert an oklch string to RGB format: rgb(r, g, b)
+ */
+export function oklchToRgb(oklch: string): string {
+  const hex = oklchToHex(oklch);
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+/**
+ * Convert an oklch color value to the specified format.
+ */
+export type ColorFormat = "oklch" | "hsl" | "rgb" | "hex";
+
+export function convertColor(oklchValue: string, format: ColorFormat): string {
+  if (!oklchValue || !oklchValue.startsWith("oklch(")) return oklchValue;
+
+  switch (format) {
+    case "oklch":
+      return oklchValue;
+    case "hsl":
+      return oklchToHsl(oklchValue);
+    case "rgb":
+      return oklchToRgb(oklchValue);
+    case "hex":
+      return oklchToHex(oklchValue);
+    default:
+      return oklchValue;
+  }
+}
+
+
+/**
+ * Convert an oklch string to raw HSL values for Tailwind v3: "H S% L%" (no hsl() wrapper)
+ */
+export function oklchToHslRaw(oklch: string): string {
+  const hex = oklchToHex(oklch);
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+
+  if (max === min) {
+    return `0 0% ${Math.round(l * 100)}%`;
+  }
+
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+  let h = 0;
+  if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+  else if (max === g) h = ((b - r) / d + 2) / 6;
+  else h = ((r - g) / d + 4) / 6;
+
+  return `${(h * 360).toFixed(1)} ${(s * 100).toFixed(1)}% ${(l * 100).toFixed(1)}%`;
+}

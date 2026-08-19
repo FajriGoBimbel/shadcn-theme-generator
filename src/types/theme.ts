@@ -77,6 +77,10 @@ export type PresetName =
   | "rose"
   | "violet";
 
+export type ColorFormat = "oklch" | "hsl" | "rgb" | "hex";
+
+export type TailwindVersion = "v3" | "v4";
+
 export interface ColorVariable {
   key: keyof ThemeColors;
   label: string;

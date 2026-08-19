@@ -10,6 +10,7 @@ import { ThemeRadius } from "./theme-radius";
 import { ThemeTypography } from "./theme-typography";
 import { ThemeShadows } from "./theme-shadows";
 import { ThemeModeToggle } from "./theme-mode-toggle";
+import { ThemeColorFormat } from "./theme-color-format";
 import { GeneratedCSS } from "./generated-css";
 
 interface ThemeSidebarProps {
@@ -82,6 +83,8 @@ export function ThemeSidebar({ onClose }: ThemeSidebarProps) {
           <ThemeShadows />
           <Separator />
           <ThemeColors />
+          <Separator />
+          <ThemeColorFormat />
           <Separator />
           <GeneratedCSS />
         </div>

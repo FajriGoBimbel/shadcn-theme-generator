@@ -1,60 +1,69 @@
-import type { ThemeConfig, ThemeColors } from "@/types/theme";
+import type { ThemeConfig, ThemeColors, ColorFormat, TailwindVersion } from "@/types/theme";
+import { convertColor, oklchToHslRaw } from "./color-utils";
 
-function colorsToCSS(colors: ThemeColors, indent: string = "  "): string {
+function colorsToCSS(colors: ThemeColors, format: ColorFormat = "oklch", indent: string = "  "): string {
   const lines: string[] = [];
+  const fmt = (value: string) => convertColor(value, format);
 
-  lines.push(`${indent}--background: ${colors.background};`);
-  lines.push(`${indent}--foreground: ${colors.foreground};`);
+  lines.push(`${indent}--background: ${fmt(colors.background)};`);
+  lines.push(`${indent}--foreground: ${fmt(colors.foreground)};`);
   lines.push("");
-  lines.push(`${indent}--card: ${colors.card};`);
-  lines.push(`${indent}--card-foreground: ${colors.cardForeground};`);
+  lines.push(`${indent}--card: ${fmt(colors.card)};`);
+  lines.push(`${indent}--card-foreground: ${fmt(colors.cardForeground)};`);
   lines.push("");
-  lines.push(`${indent}--popover: ${colors.popover};`);
-  lines.push(`${indent}--popover-foreground: ${colors.popoverForeground};`);
+  lines.push(`${indent}--popover: ${fmt(colors.popover)};`);
+  lines.push(`${indent}--popover-foreground: ${fmt(colors.popoverForeground)};`);
   lines.push("");
-  lines.push(`${indent}--primary: ${colors.primary};`);
-  lines.push(`${indent}--primary-foreground: ${colors.primaryForeground};`);
+  lines.push(`${indent}--primary: ${fmt(colors.primary)};`);
+  lines.push(`${indent}--primary-foreground: ${fmt(colors.primaryForeground)};`);
   lines.push("");
-  lines.push(`${indent}--secondary: ${colors.secondary};`);
-  lines.push(`${indent}--secondary-foreground: ${colors.secondaryForeground};`);
+  lines.push(`${indent}--secondary: ${fmt(colors.secondary)};`);
+  lines.push(`${indent}--secondary-foreground: ${fmt(colors.secondaryForeground)};`);
   lines.push("");
-  lines.push(`${indent}--muted: ${colors.muted};`);
-  lines.push(`${indent}--muted-foreground: ${colors.mutedForeground};`);
+  lines.push(`${indent}--muted: ${fmt(colors.muted)};`);
+  lines.push(`${indent}--muted-foreground: ${fmt(colors.mutedForeground)};`);
   lines.push("");
-  lines.push(`${indent}--accent: ${colors.accent};`);
-  lines.push(`${indent}--accent-foreground: ${colors.accentForeground};`);
+  lines.push(`${indent}--accent: ${fmt(colors.accent)};`);
+  lines.push(`${indent}--accent-foreground: ${fmt(colors.accentForeground)};`);
   lines.push("");
-  lines.push(`${indent}--destructive: ${colors.destructive};`);
+  lines.push(`${indent}--destructive: ${fmt(colors.destructive)};`);
   lines.push("");
-  lines.push(`${indent}--border: ${colors.border};`);
-  lines.push(`${indent}--input: ${colors.input};`);
-  lines.push(`${indent}--ring: ${colors.ring};`);
+  lines.push(`${indent}--border: ${fmt(colors.border)};`);
+  lines.push(`${indent}--input: ${fmt(colors.input)};`);
+  lines.push(`${indent}--ring: ${fmt(colors.ring)};`);
   lines.push("");
-  lines.push(`${indent}--chart-1: ${colors.chart1};`);
-  lines.push(`${indent}--chart-2: ${colors.chart2};`);
-  lines.push(`${indent}--chart-3: ${colors.chart3};`);
-  lines.push(`${indent}--chart-4: ${colors.chart4};`);
-  lines.push(`${indent}--chart-5: ${colors.chart5};`);
+  lines.push(`${indent}--chart-1: ${fmt(colors.chart1)};`);
+  lines.push(`${indent}--chart-2: ${fmt(colors.chart2)};`);
+  lines.push(`${indent}--chart-3: ${fmt(colors.chart3)};`);
+  lines.push(`${indent}--chart-4: ${fmt(colors.chart4)};`);
+  lines.push(`${indent}--chart-5: ${fmt(colors.chart5)};`);
   lines.push("");
-  lines.push(`${indent}--sidebar: ${colors.sidebar};`);
-  lines.push(`${indent}--sidebar-foreground: ${colors.sidebarForeground};`);
-  lines.push(`${indent}--sidebar-primary: ${colors.sidebarPrimary};`);
-  lines.push(`${indent}--sidebar-primary-foreground: ${colors.sidebarPrimaryForeground};`);
-  lines.push(`${indent}--sidebar-accent: ${colors.sidebarAccent};`);
-  lines.push(`${indent}--sidebar-accent-foreground: ${colors.sidebarAccentForeground};`);
-  lines.push(`${indent}--sidebar-border: ${colors.sidebarBorder};`);
-  lines.push(`${indent}--sidebar-ring: ${colors.sidebarRing};`);
+  lines.push(`${indent}--sidebar: ${fmt(colors.sidebar)};`);
+  lines.push(`${indent}--sidebar-foreground: ${fmt(colors.sidebarForeground)};`);
+  lines.push(`${indent}--sidebar-primary: ${fmt(colors.sidebarPrimary)};`);
+  lines.push(`${indent}--sidebar-primary-foreground: ${fmt(colors.sidebarPrimaryForeground)};`);
+  lines.push(`${indent}--sidebar-accent: ${fmt(colors.sidebarAccent)};`);
+  lines.push(`${indent}--sidebar-accent-foreground: ${fmt(colors.sidebarAccentForeground)};`);
+  lines.push(`${indent}--sidebar-border: ${fmt(colors.sidebarBorder)};`);
+  lines.push(`${indent}--sidebar-ring: ${fmt(colors.sidebarRing)};`);
 
   return lines.join("\n");
 }
 
-export function generateCSS(config: ThemeConfig): string {
+export function generateCSS(config: ThemeConfig, colorFormat: ColorFormat = "oklch", tailwindVersion: TailwindVersion = "v4"): string {
+  if (tailwindVersion === "v3") {
+    return generateCSSv3(config);
+  }
+  return generateCSSv4(config, colorFormat);
+}
+
+function generateCSSv4(config: ThemeConfig, colorFormat: ColorFormat = "oklch"): string {
   const css = `@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-${colorsToCSS(config.light)}
+${colorsToCSS(config.light, colorFormat)}
 
   --radius: ${config.radius};
 
@@ -73,7 +82,7 @@ ${colorsToCSS(config.light)}
 }
 
 .dark {
-${colorsToCSS(config.dark)}
+${colorsToCSS(config.dark, colorFormat)}
 }
 
 @theme inline {
@@ -138,6 +147,73 @@ ${colorsToCSS(config.dark)}
 
   html {
     @apply font-sans;
+  }
+}
+`;
+
+  return css;
+}
+
+function generateCSSv3(config: ThemeConfig): string {
+  const fmt = (value: string) => oklchToHslRaw(value);
+
+  function v3Colors(colors: ThemeColors, indent: string = "    "): string {
+    const lines: string[] = [];
+
+    lines.push(`${indent}--background: ${fmt(colors.background)};`);
+    lines.push(`${indent}--foreground: ${fmt(colors.foreground)};`);
+    lines.push("");
+    lines.push(`${indent}--card: ${fmt(colors.card)};`);
+    lines.push(`${indent}--card-foreground: ${fmt(colors.cardForeground)};`);
+    lines.push("");
+    lines.push(`${indent}--popover: ${fmt(colors.popover)};`);
+    lines.push(`${indent}--popover-foreground: ${fmt(colors.popoverForeground)};`);
+    lines.push("");
+    lines.push(`${indent}--primary: ${fmt(colors.primary)};`);
+    lines.push(`${indent}--primary-foreground: ${fmt(colors.primaryForeground)};`);
+    lines.push("");
+    lines.push(`${indent}--secondary: ${fmt(colors.secondary)};`);
+    lines.push(`${indent}--secondary-foreground: ${fmt(colors.secondaryForeground)};`);
+    lines.push("");
+    lines.push(`${indent}--muted: ${fmt(colors.muted)};`);
+    lines.push(`${indent}--muted-foreground: ${fmt(colors.mutedForeground)};`);
+    lines.push("");
+    lines.push(`${indent}--accent: ${fmt(colors.accent)};`);
+    lines.push(`${indent}--accent-foreground: ${fmt(colors.accentForeground)};`);
+    lines.push("");
+    lines.push(`${indent}--destructive: ${fmt(colors.destructive)};`);
+    lines.push(`${indent}--destructive-foreground: 0 0% 100%;`);
+    lines.push("");
+    lines.push(`${indent}--border: ${fmt(colors.border)};`);
+    lines.push(`${indent}--input: ${fmt(colors.input)};`);
+    lines.push(`${indent}--ring: ${fmt(colors.ring)};`);
+
+    return lines.join("\n");
+  }
+
+  const css = `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+${v3Colors(config.light)}
+
+    --radius: ${config.radius};
+  }
+
+  .dark {
+${v3Colors(config.dark)}
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
   }
 }
 `;
