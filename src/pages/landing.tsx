@@ -655,18 +655,18 @@ export function LandingPage() {
                     <div className="p-4 font-mono text-sm space-y-2">
                       <div className="flex items-center gap-2">
                         <span className="text-green-500">$</span>
-                        <span className="text-foreground">bun add @wahan/datatable</span>
+                        <span className="text-foreground">npx shadcn@latest add @wahan/datatable</span>
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        <p>✓ installed @wahan/datatable</p>
-                        <p>✓ 1 package installed [0.42s]</p>
+                        <p>✓ installed datatable block</p>
+                        <p>✓ 4 files added to components/datatable/</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="rounded-xl border bg-muted/30 p-4 font-mono text-xs">
                     <p className="text-muted-foreground mb-1">// Quick usage</p>
-                    <p><span className="text-primary">import</span> {"{"} DataTable {"}"} <span className="text-primary">from</span> <span className="text-green-600">"@wahan/datatable"</span></p>
+                    <p><span className="text-primary">import</span> {"{"} DataTable {"}"} <span className="text-primary">from</span> <span className="text-green-600">"@/components/datatable/data-table"</span></p>
                     <p className="mt-2">&lt;<span className="text-primary">DataTable</span></p>
                     <p className="ml-4">columns={"{columns}"}</p>
                     <p className="ml-4">data={"{data}"}</p>

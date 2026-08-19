@@ -1,0 +1,21 @@
+{
+  "name": "wahan",
+  "homepage": "https://wahan.dev",
+  "items": [
+    {
+      "name": "datatable",
+      "type": "registry:block",
+      "title": "DataTable",
+      "description": "A feature-rich, interactive datatable component built with TanStack Table. Includes sorting, pagination, row selection, loading skeleton, and sequence numbers.",
+      "dependencies": [
+        "@tanstack/react-table@^8.20.0",
+        "framer-motion@^13.0.0",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "table",
+        "pagination"
+      ]
+    }
+  ]
+}

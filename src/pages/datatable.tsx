@@ -135,20 +135,58 @@ function CopyButton({ text, className }: { text: string; className?: string }) {
   )
 }
 
-// ─── Install Command Block ──────────────────────────────────────────────────────
+// ─── Package Manager Tabs ───────────────────────────────────────────────────────
 
-function InstallCommand({ command, label }: { command: string; label: string }) {
+const packageManagers = [
+  { id: "npm", label: "npm", icon: "N", runner: "npx" },
+  { id: "yarn", label: "yarn", icon: "Y", runner: "npx" },
+  { id: "pnpm", label: "pnpm", icon: "P", runner: "pnpm dlx" },
+  { id: "bun", label: "bun", icon: "B", runner: "bunx --bun" },
+] as const
+
+function PackageManagerTabs({ registryUrl }: { registryUrl: string }) {
+  const [active, setActive] = useState<string>("bun")
+  const activeManager = packageManagers.find((pm) => pm.id === active)!
+  const command = `${activeManager.runner} shadcn@latest add ${registryUrl}/r/datatable.json`
+
   return (
-    <div className="group relative">
-      <div className="flex items-center gap-2 rounded-lg border bg-muted/50 px-4 py-3 font-mono text-sm transition-colors hover:bg-muted">
+    <div>
+      {/* Tab headers */}
+      <div className="flex border-b bg-muted/30">
+        {packageManagers.map((pm) => (
+          <button
+            key={pm.id}
+            onClick={() => setActive(pm.id)}
+            className={cn(
+              "relative flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium transition-colors",
+              active === pm.id
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground/70"
+            )}
+          >
+            <span className={cn(
+              "flex h-4 w-4 items-center justify-center rounded text-[9px] font-bold",
+              active === pm.id
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted-foreground/20 text-muted-foreground"
+            )}>
+              {pm.icon}
+            </span>
+            {pm.label}
+            {active === pm.id && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t" />
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Command display */}
+      <div className="flex items-center gap-2 px-4 py-3.5 font-mono text-sm">
         <Terminal className="h-4 w-4 text-muted-foreground shrink-0" />
         <span className="text-muted-foreground">$</span>
-        <code className="flex-1 text-foreground">{command}</code>
+        <code className="flex-1 text-foreground truncate">{command}</code>
         <CopyButton text={command} />
       </div>
-      <span className="absolute -top-2.5 left-3 bg-background px-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-        {label}
-      </span>
     </div>
   )
 }
@@ -268,14 +306,10 @@ export function DataTablePage() {
           </p>
 
           {/* Install Commands */}
-          <div className="mx-auto max-w-lg space-y-3 mb-8">
-            <InstallCommand command="bun add @wahan/datatable" label="Install" />
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-xs text-muted-foreground">or</span>
-              <div className="h-px flex-1 bg-border" />
+          <div className="mx-auto max-w-lg mb-8">
+            <div className="rounded-xl border bg-card overflow-hidden">
+              <PackageManagerTabs registryUrl={import.meta.env.VITE_REGISTRY_URL} />
             </div>
-            <InstallCommand command="npm install @wahan/datatable" label="npm" />
           </div>
 
           {/* Quick stats */}
@@ -404,7 +438,7 @@ export function DataTablePage() {
             <TabsContent value="basic">
               <CodeBlock
                 filename="page.tsx"
-                code={`import { DataTable } from "@wahan/datatable"
+                code={`import { DataTable } from "@/components/datatable/data-table"
 
 const columns = [
   {
@@ -437,7 +471,7 @@ export default function UsersPage() {
             <TabsContent value="pagination">
               <CodeBlock
                 filename="page.tsx"
-                code={`import { DataTable } from "@wahan/datatable"
+                code={`import { DataTable } from "@/components/datatable/data-table"
 
 export default function UsersPage() {
   const [page, setPage] = useState(1)
@@ -471,7 +505,7 @@ export default function UsersPage() {
             <TabsContent value="selection">
               <CodeBlock
                 filename="page.tsx"
-                code={`import { DataTable } from "@wahan/datatable"
+                code={`import { DataTable } from "@/components/datatable/data-table"
 
 export default function UsersPage() {
   const [selected, setSelected] = useState([])
@@ -590,7 +624,9 @@ export default function UsersPage() {
               Install the package and start building beautiful data tables in minutes.
             </p>
             <div className="w-full max-w-md">
-              <InstallCommand command="bun add @wahan/datatable" label="Install" />
+              <div className="rounded-xl border bg-card overflow-hidden">
+                <PackageManagerTabs registryUrl={import.meta.env.VITE_REGISTRY_URL} />
+              </div>
             </div>
           </CardContent>
         </Card>

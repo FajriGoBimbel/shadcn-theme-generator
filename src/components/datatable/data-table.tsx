@@ -237,11 +237,14 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center justify-between border-b bg-primary/5 px-4 py-2 transition-all duration-200">
           <div className="flex items-center gap-2">
             <div className="flex h-5 w-5 items-center justify-center rounded bg-primary">
-              <svg onClick={() => {
-              table.toggleAllPageRowsSelected(false)
-              setTrigerCheck([])
-              onSelect?.([])
-            }} className="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+              <svg 
+                onClick={() => {
+                table.toggleAllPageRowsSelected(false)
+                setTrigerCheck([])
+                onSelect?.([])
+                }} 
+                className="h-3 w-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
