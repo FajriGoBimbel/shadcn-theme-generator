@@ -16,6 +16,7 @@ import {
   ArrowUpDown,
   CheckSquare,
   ArrowRight,
+  Gamepad2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +32,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "@/lib/theme-context";
 import { ThemeSidebar } from "@/components/generator/theme-sidebar";
+import { ColorMatchGame } from "@/components/generator/color-match-game";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 
@@ -586,6 +588,26 @@ export function LandingPage() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Mini Game — Color Match */}
+      <section id="game" className="container mx-auto px-6 py-20">
+        <div className="text-center mb-12">
+          <Badge variant="secondary" className="mb-4 gap-1.5">
+            <Gamepad2 className="h-3.5 w-3.5" />
+            Play
+          </Badge>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+            Test your eye for color
+          </h2>
+          <p className="mx-auto max-w-xl text-muted-foreground">
+            One tile is a slightly different shade than the rest. Spot it before the
+            timer runs out. It gets harder every level as the differences shrink —
+            how good is your color perception?
+          </p>
+        </div>
+
+        <ColorMatchGame />
       </section>
 
       {/* DataTable Component */}

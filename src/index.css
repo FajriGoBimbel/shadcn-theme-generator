@@ -228,6 +228,14 @@
   100% { width: 100%; }
 }
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
 .animate-float {
   animation: float 4s ease-in-out infinite;
 }
@@ -264,4 +272,8 @@
 
 .animate-progress {
   animation: progress-bar 3s ease-in-out infinite;
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
 }
