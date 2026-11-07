@@ -35,6 +35,21 @@
           "target": "components/datatable/skeleton-table.tsx"
         }
       ]
+    },
+    {
+      "name": "multiselect",
+      "type": "registry:component",
+      "title": "MultiSelect",
+      "description": "A modern, accessible multi-select combobox with search, keyboard navigation, badge chips, option grouping, select-all/clear, and max-selection limits. Self-contained with no extra runtime dependencies.",
+      "registryDependencies": ["badge"],
+      "dependencies": ["lucide-react"],
+      "files": [
+        {
+          "path": "registry/default/multiselect/components/multi-select.tsx",
+          "type": "registry:component",
+          "target": "components/multiselect/multi-select.tsx"
+        }
+      ]
     }
   ]
 }

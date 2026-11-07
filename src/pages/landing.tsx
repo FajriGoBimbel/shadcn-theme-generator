@@ -17,6 +17,10 @@ import {
   CheckSquare,
   ArrowRight,
   Gamepad2,
+  ListChecks,
+  Search,
+  Keyboard,
+  Tags,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +37,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "@/lib/theme-context";
 import { ThemeSidebar } from "@/components/generator/theme-sidebar";
 import { ColorMatchGame } from "@/components/generator/color-match-game";
+import { MultiSelectDemo } from "@/components/generator/multi-select-demo";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 
@@ -693,6 +698,101 @@ export function LandingPage() {
                     <p className="ml-4">columns={"{columns}"}</p>
                     <p className="ml-4">data={"{data}"}</p>
                     <p className="ml-4">isSelect</p>
+                    <p>/&gt;</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* MultiSelect Component */}
+      <section className="container mx-auto px-6 py-20">
+        <div className="text-center mb-14">
+          <Badge variant="secondary" className="mb-4">
+            Open Source
+          </Badge>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+            MultiSelect Component
+          </h2>
+          <p className="mx-auto max-w-xl text-muted-foreground">
+            A modern, accessible multi-select combobox. Search, keyboard navigation,
+            badge chips, grouping, and selection limits — zero extra dependencies.
+          </p>
+        </div>
+
+        <div className="mx-auto max-w-4xl">
+          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-primary/3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <CardContent className="relative p-8">
+              <div className="grid gap-8 md:grid-cols-2 md:items-start">
+                {/* Left — live interactive demo */}
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                      <ListChecks className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">@wahan/multiselect</h3>
+                      <p className="text-xs text-muted-foreground">v1.0.0 · MIT License</p>
+                    </div>
+                  </div>
+
+                  <MultiSelectDemo />
+
+                  <div className="space-y-2.5 pt-1">
+                    {[
+                      { icon: Search, text: "Built-in search & filtering" },
+                      { icon: Keyboard, text: "Full keyboard navigation" },
+                      { icon: Tags, text: "Badge chips, grouping & limits" },
+                    ].map((item) => (
+                      <div key={item.text} className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                        <item.icon className="h-4 w-4 text-primary shrink-0" />
+                        <span>{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Link to="/multiselect">
+                    <Button className="gap-2 mt-2">
+                      View Documentation
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+
+                {/* Right — install + usage */}
+                <div className="space-y-3">
+                  <div className="rounded-xl border bg-muted/30 overflow-hidden">
+                    <div className="flex items-center gap-2 border-b bg-muted/50 px-4 py-2">
+                      <div className="flex gap-1.5">
+                        <div className="h-2.5 w-2.5 rounded-full bg-red-400" />
+                        <div className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
+                        <div className="h-2.5 w-2.5 rounded-full bg-green-400" />
+                      </div>
+                      <span className="text-[10px] text-muted-foreground font-mono">terminal</span>
+                    </div>
+                    <div className="p-4 font-mono text-sm space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-500">$</span>
+                        <span className="text-foreground">npx shadcn@latest add @wahan/multiselect</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        <p>✓ installed multiselect component</p>
+                        <p>✓ added components/multiselect/multi-select.tsx</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border bg-muted/30 p-4 font-mono text-xs leading-relaxed">
+                    <p className="text-muted-foreground mb-1">// Quick usage</p>
+                    <p><span className="text-primary">import</span> {"{"} MultiSelect {"}"} <span className="text-primary">from</span> <span className="text-green-600">"@/components/multiselect/multi-select"</span></p>
+                    <p className="mt-2">&lt;<span className="text-primary">MultiSelect</span></p>
+                    <p className="ml-4">options={"{options}"}</p>
+                    <p className="ml-4">value={"{value}"}</p>
+                    <p className="ml-4">onChange={"{setValue}"}</p>
+                    <p className="ml-4">maxSelected={"{5}"}</p>
                     <p>/&gt;</p>
                   </div>
                 </div>

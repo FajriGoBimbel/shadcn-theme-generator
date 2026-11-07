@@ -9,10 +9,26 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
-const SRC_DIR = path.join(ROOT, "src", "components", "datatable");
-const REGISTRY_DIR = path.join(ROOT, "registry", "default", "datatable", "components");
 const OUTPUT_DIR = path.join(ROOT, "public", "r");
 const LOG_FILE = path.join(ROOT, "build-log.txt");
+
+// Each block syncs from src/components/<dir> to registry/default/<dir>/components.
+// Relative "./x" imports are rewritten to "@/components/<dir>/x".
+const BLOCKS = [
+  {
+    dir: "datatable",
+    files: [
+      "data-table.tsx",
+      "data-table-pagination.tsx",
+      "basic-pagination.tsx",
+      "skeleton-table.tsx",
+    ],
+  },
+  {
+    dir: "multiselect",
+    files: ["multi-select.tsx"],
+  },
+];
 
 let log = "";
 
@@ -20,38 +36,36 @@ try {
   // ─── Step 1: Sync src → registry ─────────────────────────────────────────
   log += "=== STEP 1: Sync src -> registry ===\n";
 
-  fs.mkdirSync(REGISTRY_DIR, { recursive: true });
+  for (var b = 0; b < BLOCKS.length; b++) {
+    var block = BLOCKS[b];
+    var srcDir = path.join(ROOT, "src", "components", block.dir);
+    var registryDir = path.join(ROOT, "registry", "default", block.dir, "components");
 
-  const filesToSync = [
-    "data-table.tsx",
-    "data-table-pagination.tsx",
-    "basic-pagination.tsx",
-    "skeleton-table.tsx",
-  ];
+    fs.mkdirSync(registryDir, { recursive: true });
+    log += "-- Block: " + block.dir + "\n";
 
-  for (var i = 0; i < filesToSync.length; i++) {
-    var fileName = filesToSync[i];
-    var srcFile = path.join(SRC_DIR, fileName);
+    for (var i = 0; i < block.files.length; i++) {
+      var fileName = block.files[i];
+      var srcFile = path.join(srcDir, fileName);
 
-    if (!fs.existsSync(srcFile)) {
-      log += "  SKIP (not found): " + fileName + "\n";
-      continue;
+      if (!fs.existsSync(srcFile)) {
+        log += "  SKIP (not found): " + fileName + "\n";
+        continue;
+      }
+
+      var content = fs.readFileSync(srcFile, "utf8");
+
+      // Replace relative imports with absolute @/ imports.
+      // e.g. "./data-table-pagination" -> "@/components/datatable/data-table-pagination"
+      content = content.replace(
+        /from\s+["']\.\/([^"']+)["']/g,
+        'from "@/components/' + block.dir + '/$1"'
+      );
+
+      var destFile = path.join(registryDir, fileName);
+      fs.writeFileSync(destFile, content, "utf8");
+      log += "  Synced: " + fileName + "\n";
     }
-
-    var content = fs.readFileSync(srcFile, "utf8");
-
-    // Replace relative imports with absolute @/ imports
-    // "./data-table-pagination" -> "@/components/datatable/data-table-pagination"
-    // "./basic-pagination" -> "@/components/datatable/basic-pagination"
-    // "./skeleton-table" -> "@/components/datatable/skeleton-table"
-    content = content.replace(
-      /from\s+["']\.\/([^"']+)["']/g,
-      'from "@/components/datatable/$1"'
-    );
-
-    var destFile = path.join(REGISTRY_DIR, fileName);
-    fs.writeFileSync(destFile, content, "utf8");
-    log += "  Synced: " + fileName + "\n";
   }
 
   // ─── Step 2: Build registry JSON ─────────────────────────────────────────
