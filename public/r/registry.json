@@ -28,6 +28,26 @@
       "registryDependencies": [
         "badge"
       ]
+    },
+    {
+      "name": "markdown-editor",
+      "type": "registry:component",
+      "title": "MarkdownEditor",
+      "description": "A GitHub-style markdown editor with Write/Preview tabs, a formatting toolbar, keyboard shortcuts, and a fullscreen mode, backed by a zero-dependency markdown-to-React renderer (headings, emphasis, lists, task lists, tables, code blocks, links, images).",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": []
+    },
+    {
+      "name": "html-editor",
+      "type": "registry:component",
+      "title": "HtmlEditor",
+      "description": "A GitHub-style HTML editor with Write/Preview tabs, a tag toolbar, keyboard shortcuts, and a fullscreen mode. Preview renders through a sandboxed iframe so scripts never execute.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": []
     }
   ]
 }

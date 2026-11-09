@@ -28,6 +28,14 @@ const BLOCKS = [
     dir: "multiselect",
     files: ["multi-select.tsx"],
   },
+  {
+    dir: "markdown-editor",
+    files: ["markdown-editor.tsx", "markdown-renderer.tsx"],
+  },
+  {
+    dir: "html-editor",
+    files: ["html-editor.tsx", "html-preview.tsx"],
+  },
 ];
 
 let log = "";
