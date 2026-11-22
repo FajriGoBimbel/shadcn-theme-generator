@@ -75,9 +75,9 @@
       "name": "html-editor",
       "type": "registry:component",
       "title": "HtmlEditor",
-      "description": "A GitHub-style HTML editor with Write/Preview tabs, a tag toolbar, keyboard shortcuts, and a fullscreen mode. Preview renders through a sandboxed iframe so scripts never execute.",
+      "description": "A GitHub-style HTML editor with Write/Preview tabs, a tag toolbar, a math/physics/chemistry symbol picker, KaTeX-rendered LaTeX math, keyboard shortcuts, and a fullscreen mode. Preview renders through a sandboxed iframe so scripts never execute.",
       "registryDependencies": [],
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react", "katex"],
       "files": [
         {
           "path": "registry/default/html-editor/components/html-editor.tsx",
@@ -88,6 +88,11 @@
           "path": "registry/default/html-editor/components/html-preview.tsx",
           "type": "registry:component",
           "target": "components/html-editor/html-preview.tsx"
+        },
+        {
+          "path": "registry/default/html-editor/components/symbol-picker.tsx",
+          "type": "registry:component",
+          "target": "components/html-editor/symbol-picker.tsx"
         }
       ]
     }

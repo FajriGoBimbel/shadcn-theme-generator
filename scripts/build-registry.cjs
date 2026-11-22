@@ -34,7 +34,7 @@ const BLOCKS = [
   },
   {
     dir: "html-editor",
-    files: ["html-editor.tsx", "html-preview.tsx"],
+    files: ["html-editor.tsx", "html-preview.tsx", "symbol-picker.tsx"],
   },
 ];
 

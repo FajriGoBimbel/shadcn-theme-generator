@@ -20,9 +20,14 @@ import {
   Maximize2,
   Minimize2,
   HelpCircle,
+  Superscript,
+  Subscript,
+  Sigma,
+  SquareFunction,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { HtmlPreview } from "@/components/html-editor/html-preview"
+import { SymbolPicker } from "@/components/html-editor/symbol-picker"
 
 export interface HtmlEditorProps {
   /** Controlled HTML source. */
@@ -84,6 +89,11 @@ const CHEATSHEET: { syntax: string; result: string }[] = [
   { syntax: '<img src="" />', result: "image" },
   { syntax: "<pre><code></code></pre>", result: "code block" },
   { syntax: "<table>", result: "table" },
+  { syntax: "<sup></sup>", result: "superscript" },
+  { syntax: "<sub></sub>", result: "subscript" },
+  { syntax: "$$\\frac{a}{b}$$", result: "math block (LaTeX)" },
+  { syntax: "$x^2$", result: "inline math" },
+  { syntax: "$$\\ce{H2O}$$", result: "chemistry" },
 ]
 
 function ToolbarButton({
@@ -146,10 +156,12 @@ export function HtmlEditor({
   const [tab, setTab] = React.useState<"write" | "preview">("write")
   const [fullscreen, setFullscreen] = React.useState(false)
   const [helpOpen, setHelpOpen] = React.useState(false)
+  const [symbolsOpen, setSymbolsOpen] = React.useState(false)
   const [isDragActive, setIsDragActive] = React.useState(false)
 
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
   const helpRef = React.useRef<HTMLDivElement>(null)
+  const symbolsRef = React.useRef<HTMLDivElement>(null)
   const valueRef = React.useRef(value)
 
   React.useEffect(() => {
@@ -187,6 +199,19 @@ export function HtmlEditor({
     document.addEventListener("mousedown", onPointerDown)
     return () => document.removeEventListener("mousedown", onPointerDown)
   }, [helpOpen])
+
+  React.useEffect(() => {
+    if (!symbolsOpen) return
+    const onPointerDown = (e: MouseEvent) => {
+      if (symbolsRef.current && !symbolsRef.current.contains(e.target as Node)) setSymbolsOpen(false)
+    }
+    document.addEventListener("mousedown", onPointerDown)
+    return () => document.removeEventListener("mousedown", onPointerDown)
+  }, [symbolsOpen])
+
+  React.useEffect(() => {
+    if (tab !== "write") setSymbolsOpen(false)
+  }, [tab])
 
   const focusTextarea = React.useCallback((start: number, end: number) => {
     requestAnimationFrame(() => {
@@ -366,6 +391,21 @@ export function HtmlEditor({
       insertLink()
       return
     }
+    if (meta && e.key.toLowerCase() === "m") {
+      e.preventDefault()
+      wrapSelection("$$", "$$", "x^2")
+      return
+    }
+    if (meta && e.key === ".") {
+      e.preventDefault()
+      wrapSelection("<sup>", "</sup>", "2")
+      return
+    }
+    if (meta && e.key === ",") {
+      e.preventDefault()
+      wrapSelection("<sub>", "</sub>", "2")
+      return
+    }
     if (e.key === "Tab") {
       e.preventDefault()
       const el = e.currentTarget
@@ -391,6 +431,8 @@ export function HtmlEditor({
       { icon: Bold, label: "Bold", shortcut: "Ctrl+B", onClick: () => wrapSelection("<strong>", "</strong>", "bold text") },
       { icon: Italic, label: "Italic", shortcut: "Ctrl+I", onClick: () => wrapSelection("<em>", "</em>", "italic text") },
       { icon: Strikethrough, label: "Strikethrough", onClick: () => wrapSelection("<s>", "</s>", "strikethrough") },
+      { icon: Superscript, label: "Superscript", shortcut: "Ctrl+.", onClick: () => wrapSelection("<sup>", "</sup>", "2") },
+      { icon: Subscript, label: "Subscript", shortcut: "Ctrl+,", onClick: () => wrapSelection("<sub>", "</sub>", "2") },
     ],
     [
       { icon: Quote, label: "Quote", onClick: () => wrapSelection("<blockquote>", "</blockquote>", "Quote") },
@@ -404,6 +446,7 @@ export function HtmlEditor({
       { icon: ListTodo, label: "Task list", onClick: insertTaskList },
     ],
     [
+      { icon: SquareFunction, label: "Math formula (LaTeX)", shortcut: "Ctrl+M", onClick: () => wrapSelection("$$", "$$", "x^2") },
       { icon: Code, label: "Code block", onClick: insertCodeBlock },
       { icon: TableIcon, label: "Table", onClick: insertTable },
       { icon: Minus, label: "Horizontal rule", onClick: insertHr },
@@ -471,6 +514,30 @@ export function HtmlEditor({
                 </React.Fragment>
               ))}
 
+            {tab === "write" && toolbar && (
+              <>
+                <ToolbarDivider />
+                <div className="relative" ref={symbolsRef}>
+                  <ToolbarButton
+                    icon={Sigma}
+                    label="Simbol matematika, fisika & kimia"
+                    onClick={() => setSymbolsOpen((o) => !o)}
+                    disabled={disabled}
+                  />
+                  {symbolsOpen && (
+                    <SymbolPicker
+                      className="absolute right-0 z-10 mt-1.5"
+                      onSelect={(text) => insertAtCursor(text)}
+                      onClose={() => {
+                        setSymbolsOpen(false)
+                        textareaRef.current?.focus()
+                      }}
+                    />
+                  )}
+                </div>
+              </>
+            )}
+
             <ToolbarDivider />
             <div className="relative" ref={helpRef}>
               <ToolbarButton icon={HelpCircle} label="HTML cheatsheet" onClick={() => setHelpOpen((o) => !o)} />
@@ -529,7 +596,7 @@ export function HtmlEditor({
 
         {/* Footer */}
         <div className="flex items-center justify-between gap-2 border-t bg-muted/20 px-3 py-1.5 text-[11px] text-muted-foreground">
-          <span>Preview is sandboxed · paste or drop images to attach</span>
+          <span>Preview is sandboxed · LaTeX math via $$…$$ · paste or drop images to attach</span>
           <span className="font-mono">
             {charCount} chars · {lineCount} lines
           </span>
